@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Предвзятые нейросети | Учение - свет</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Предвзятые нейросети" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Здесь я пишу всё новое и интересное, о чем узнаю в процессе обучения" />
+<meta property="og:description" content="Здесь я пишу всё новое и интересное, о чем узнаю в процессе обучения" />
+<link rel="canonical" href="https://irinaprokofieva.github.io/my-ml-blog/fastpages/jupyter/2020/09/10/Bias-networks.html" />
+<meta property="og:url" content="https://irinaprokofieva.github.io/my-ml-blog/fastpages/jupyter/2020/09/10/Bias-networks.html" />
+<meta property="og:site_name" content="Учение - свет" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-09-10T00:00:00-05:00" />
+<script type="application/ld+json">
+{"headline":"Предвзятые нейросети","description":"Здесь я пишу всё новое и интересное, о чем узнаю в процессе обучения","datePublished":"2020-09-10T00:00:00-05:00","dateModified":"2020-09-10T00:00:00-05:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://irinaprokofieva.github.io/my-ml-blog/fastpages/jupyter/2020/09/10/Bias-networks.html"},"url":"https://irinaprokofieva.github.io/my-ml-blog/fastpages/jupyter/2020/09/10/Bias-networks.html","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/my-ml-blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://irinaprokofieva.github.io/my-ml-blog/feed.xml" title="Учение - свет" /><link rel="shortcut icon" type="image/x-icon" href="/my-ml-blog/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Предвзятые нейросети | Учение - свет</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Предвзятые нейросети" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Здесь я пишу всё новое и интересное, о чем узнаю в процессе обучения" />
+<meta property="og:description" content="Здесь я пишу всё новое и интересное, о чем узнаю в процессе обучения" />
+<link rel="canonical" href="https://irinaprokofieva.github.io/my-ml-blog/fastpages/jupyter/2020/09/10/Bias-networks.html" />
+<meta property="og:url" content="https://irinaprokofieva.github.io/my-ml-blog/fastpages/jupyter/2020/09/10/Bias-networks.html" />
+<meta property="og:site_name" content="Учение - свет" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-09-10T00:00:00-05:00" />
+<script type="application/ld+json">
+{"headline":"Предвзятые нейросети","description":"Здесь я пишу всё новое и интересное, о чем узнаю в процессе обучения","datePublished":"2020-09-10T00:00:00-05:00","dateModified":"2020-09-10T00:00:00-05:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://irinaprokofieva.github.io/my-ml-blog/fastpages/jupyter/2020/09/10/Bias-networks.html"},"url":"https://irinaprokofieva.github.io/my-ml-blog/fastpages/jupyter/2020/09/10/Bias-networks.html","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css"><link type="application/atom+xml" rel="alternate" href="https://irinaprokofieva.github.io/my-ml-blog/feed.xml" title="Учение - свет" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/my-ml-blog/">Учение - свет</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/my-ml-blog/about/">About Me</a><a class="page-link" href="/my-ml-blog/search/">Search</a><a class="page-link" href="/my-ml-blog/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Предвзятые нейросети</h1><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-09-10T00:00:00-05:00" itemprop="datePublished">
+        Sep 10, 2020
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      4 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/my-ml-blog/categories/#fastpages">fastpages</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/my-ml-blog/categories/#jupyter">jupyter</a>
+        
+      
+      </p>
+    
+
+    
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2020-09-10-Bias-networks.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="&#1057;&#1083;&#1099;&#1096;&#1072;&#1083;&#1080;-&#1083;&#1080;-&#1074;&#1099;-&#1088;&#1072;&#1085;&#1100;&#1096;&#1077;-&#1086;-predictive-policing?">&#1057;&#1083;&#1099;&#1096;&#1072;&#1083;&#1080; &#1083;&#1080; &#1074;&#1099; &#1088;&#1072;&#1085;&#1100;&#1096;&#1077; &#1086; <em>predictive policing</em>?<a class="anchor-link" href="#&#1057;&#1083;&#1099;&#1096;&#1072;&#1083;&#1080;-&#1083;&#1080;-&#1074;&#1099;-&#1088;&#1072;&#1085;&#1100;&#1096;&#1077;-&#1086;-predictive-policing?"> </a></h3><p>Predictive policing - это система, которая призвана помочь полиции, основываясь на данных об уже совершенных преступлениях. Нейросети, которые, конечно же, там используются, получают на вход архивные данные и дают советы:  например, куда и когда следует отправить полицейский патруль. Этот метод предотвращения преступлений, конечно, не является чудо-техникой, которая скажет: "Я проанализировал материальное состояние жителей этого района и сделал вывод, что через час, вероятно, студент Раскольников убьет старуху-процентщицу и ее сестру. Отправьте туда пару полицейских." Конечно, нет. Эта система больше похожа на опытного полицейского-старожила, который сказал бы: "У нас тут каждые полгода грабят продуктовый магазин за углом, наверное, в этот раз стоит послать туда пару ребят подежурить". Такой помощник появился в 2011 и сейчас используется в некоторых штатах США и в Китае.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="/my-ml-blog/images/copied_from_nb/my_icons/Predictive-Policing.png" alt="" /></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Казалось бы, что в этом может быть плохого? Но в начале этого года AI Now Institute <a href="https://thenextweb.com/neural/2020/02/20/ai-now-predictive-policing-systems-are-racist-because-corrupt-cops-produce-dirty-data/">провели исследование</a>, которое показало обратную сторону медали. Дело в том, что данные, на которых обучалась данная модель, не были чистыми изначально. За долгую историю американской полиции было накопилось много дел, в которых большую роль сыграло расовое неравенство, и оказалось, среди прочего, что среди задержанных процент чернокожего населения был больше, чем процент белого. Основываясь на предоставленных ей данных, программа советовала отправить большую часть патрульных в районы, которые казались ей неблагополучными, например, афроамериканское гетто. Понятно, что без дела полиция не остаётся, и процент негров среди арестованных растет. Машина получает последние данные и видит, что большую часть преступников задержали в тех районах и советует послать туда ещё больше полицейских. Получается замкнутый круг и как следствие усугубление проблемы расового неравенства. Коррупция, выбивание показаний, предвзятость и многое другое, что находит отражение в данных для обучения, будут лишь множиться, если слепо следовать советам системы прогнозирования.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Такой замкнутый круг, когда результат одной итерации подается на вход другой, называется <em>feedback loop</em>, т.е. цикл с обратной связью.</p>
+<p>Давайте подумаем, где ещё можно встретить такой цикл? На самом деле везде, где рекомендации машины предполагают совершение какого-то действия, где машина постоянно дообучается на новых данных, полученных в результате своей работы, и где изначальные данные не слишком чистые.</p>
+<p>Мне в голову пришло ещё несколько примеров.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="&#1055;&#1088;&#1080;&#1084;&#1077;&#1088;-1">&#1055;&#1088;&#1080;&#1084;&#1077;&#1088; 1<a class="anchor-link" href="#&#1055;&#1088;&#1080;&#1084;&#1077;&#1088;-1"> </a></h3><p>Где-то я читала о вспомогательной системе для отдела кадров, которая определяет по каким-то данным, насколько хорошо сотрудник вольётся в компанию. Так вот, можно предположить, что если в компании, например, мужчин работает больше, чем женщин, то выбирая между мужчиной и женщиной с одинаковыми навыками, программа отдаст предпочтение мужчине. Как вы понимаете, со временем коэффициент "привлекательности" для компании у мужчин сильно вырастет и программа станет ещё более предвзятой. На лицо feedback loop. Интересно, что похожая ситуация действительно имело место. Подробнее можно почитать <a href="https://www.reuters.com/article/us-amazon-com-jobs-automation-insight/amazon-scraps-secret-ai-recruiting-tool-that-showed-bias-against-women-idUSKCN1MK08G">здесь</a>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="/my-ml-blog/images/copied_from_nb/my_icons/hr.png" alt="" />Изображение <a href="https://pixabay.com/ru/users/coffeebeanworks-558718/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=3449422">Coffee Bean</a> с сайта <a href="https://pixabay.com/ru/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=3449422">Pixabay</a></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="&#1055;&#1088;&#1080;&#1084;&#1077;&#1088;-2">&#1055;&#1088;&#1080;&#1084;&#1077;&#1088; 2<a class="anchor-link" href="#&#1055;&#1088;&#1080;&#1084;&#1077;&#1088;-2"> </a></h3><p>Другой пример: представим, что мы обучаем своего чат-бота на открытых данных так, что он учится на реальных диалогах из интернета, а мы информацию для него практически не фильтруем. Внедряем наш чат-бот в среду, для которой он был предназначен, ну, скажем, на сайт для покупки билетов на футбольные матчи. И вдруг обнаруживается, что в том огромном датасете, на котором обучался наш помощник, были пару грубых диалогов и наша модель выучила несколько грубых фраз. Проблема в том, что машина не знает, что это плохие фразы и что так говорить нельзя, поэтому она случайно нагрубила в ответ какому-то футбольному фанату, который хотел уточнить, сколько нынче стоят билеты на матч. Понятное дело, тот может даже не догадываться, что отвечает ему не человек, но в любом случае хамство терпеть он не собирается и отвечает нашему боту соответствующим образом. Теперь наш бот знает ещё больше нехороших слов. И если разработчик вовремя не вмешается, мы вскоре обнаружим, что наша модель ведёт себя все более хамски. Опять feedback loop.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<blockquote><p>facebook:<a href="https://www.facebook.com/photo.php?fbid=3459971877361287&amp;set=a.528349177190253&amp;type=3Просто">https://www.facebook.com/photo.php?fbid=3459971877361287&amp;set=a.528349177190253&amp;type=3Просто</a> вспомнилась история с грубоватым чат-ботом банка Тинькофф</p>
+</blockquote>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="&#1055;&#1088;&#1080;&#1084;&#1077;&#1088;-3">&#1055;&#1088;&#1080;&#1084;&#1077;&#1088; 3<a class="anchor-link" href="#&#1055;&#1088;&#1080;&#1084;&#1077;&#1088;-3"> </a></h3><p>Последний пример, который пришел мне на ум, не так хорош, так как не так близок к реальности. Если представить, что на распределение денег между регионами будет влиять обученная модель, то, вероятно, количество выделенных из бюджета средств будет пропорционально численности населения, площади города и количеству каких-нибудь крупных текущих проектов. Получив хорошее финансирование, крупный город M решил начать капитальный ремонт всего исторического центра. Увидев, что в городе М много начавшихся строек и реконструкций, система  в следующем квартале выделяет ему ещё больше денег, но бюджет не безграничен, поэтому часть финансов забирают из суммы, которую в прошлый раз получили мелкие города, где никаких крупных строек не идёт уже лет 50. Как можно догадаться, обрадовавшись ещё большему финансированию, крупный город решает построить себе ещё пару офисных небоскребов и медучреждений с новейшим оборудованием. Вот он, порочный круг. С каждым разом программа будет предназначать все большие суммы крупным городам в ущерб мелким.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="/my-ml-blog/images/copied_from_nb/my_icons/budget.jpg" alt="" /><span>Photo by <a href="https://unsplash.com/@sharonmccutcheon?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Sharon McCutcheon</a> on <a href="https://unsplash.com/s/photos/budget?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="&#1047;&#1072;&#1082;&#1083;&#1102;&#1095;&#1077;&#1085;&#1080;&#1077;">&#1047;&#1072;&#1082;&#1083;&#1102;&#1095;&#1077;&#1085;&#1080;&#1077;<a class="anchor-link" href="#&#1047;&#1072;&#1082;&#1083;&#1102;&#1095;&#1077;&#1085;&#1080;&#1077;"> </a></h3><p>Такие ситуации встречаются, и предотвратить их очень сложно, ведь кристально чистых, "непредвзятых" данных практически не бывает. Что же делать? Не доверять все управление полностью системе, должен быть человек, который бы постоянно контролировал предсказания машины. Помните, что это <em>только предсказания</em>, то есть советы, а не точные инструкции. Машина бездушна, она не читала стихи Маяковского и не понимает, что такое хорошо, а что такое плохо. Поэтому прежде, чем следовать совету искуственного интеллекта, включите свой естественный.
+А моя статья подошла к концу. Спасибо за внимание! Если у вас есть замечания, предложения или другие интересные примеры таких циклов, пишите в комментариях!</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="/my-ml-blog/images/copied_from_nb/my_icons/goodbye.jpg" alt="" />Изображение a href=httpspixabay.comruusersgeralt-9301utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=3258939Gerd Altmanna с сайта a href=httpspixabay.comruutm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=3258939Pixabaya</p>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="IrinaProkofieva/my-ml-blog"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/my-ml-blog/fastpages/jupyter/2020/09/10/Bias-networks.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/my-ml-blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/my-ml-blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/my-ml-blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>Здесь я пишу всё новое и интересное, о чем узнаю в процессе обучения</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/IrinaProkofieva" title="IrinaProkofieva"><svg class="svg-icon grey"><use xlink:href="/my-ml-blog/assets/minima-social-icons.svg#github"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
